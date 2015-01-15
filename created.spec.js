@@ -29,21 +29,33 @@ describe('Mongoose plugin: created', function () {
       schema = BlogSchema();
     });
 
-    it('should add only `created.date` to the schema', function () {
+    it('should add a virtual `created.date` to the schema', function () {
       schema.plugin(created);
-      expect(schema.path('created.by')).toBeUndefined();
-      expect(schema.path('created.date')).toBeDefined();
+      expect(schema.pathType('created.date')).toBe('virtual');
+      expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
     });
 
-    it('should add both "created.by" and `created.date` to the schema', function () {
-      schema.plugin(created, 'User');
-      expect(schema.path('created.by')).toBeDefined();
-      expect(schema.path('created.date')).toBeDefined();
+    it('should add both a virtual `created.by` and a real `created.date` to the schema', function () {
+      schema.plugin(created, {byRef: 'User'});
+      expect(schema.pathType('created.date')).toBe('virtual');
+      expect(schema.pathType('created.by')).toBe('real');
     });
 
-    it('should make "created.by" required by default', function () {
-      schema.plugin(created, 'User');
+    it('should make `created.by` required by default', function () {
+      schema.plugin(created, {byRef: 'User'});
       expect(schema.path('created.by').isRequired).toBe(true);
+    });
+
+    it('should add a real `created.date` to the schema', function () {
+      schema.plugin(created, {useVirtual: false});
+      expect(schema.pathType('created.date')).toBe('real');
+      expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
+    });
+
+    it('should add both `createdBy` and `createdDate` to the schema', function () {
+      schema.plugin(created, {byRef: 'User', byPath: 'createdBy', datePath: 'createdDate'});
+      expect(schema.pathType('createdDate')).toBe('virtual');
+      expect(schema.pathType('createdBy')).toBe('real');
     });
   });
 
@@ -126,7 +138,6 @@ function model(name, schema) {
 function BlogSchema() {
   return Schema({
     title: String,
-    blog: String,
-    created: {type: Date, 'default': Date.now}
+    blog: String
   });
 }

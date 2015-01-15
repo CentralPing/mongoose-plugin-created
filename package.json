@@ -1,9 +1,10 @@
 {
   "name": "mongoose-plugin-created",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Mongoose.js plugin to capture document creation timestamp with optional user identifier",
   "main": "created.js",
   "dependencies": {
+    "lodash-node": "^2.4.1",
     "mongoose": "^3.8.18"
   },
   "devDependencies": {
