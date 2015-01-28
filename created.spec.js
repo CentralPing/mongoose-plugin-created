@@ -122,6 +122,51 @@ describe('Mongoose plugin: created', function () {
       });
     });
   });
+
+  describe('with document expirations', function () {
+    var Blog;
+    var originalTimeout;
+
+    beforeAll(function () {
+      // Need to extend the Jasmine timeout to allow for 60+ seconds
+      // for MongoDB to purge the expired documents
+      // http://docs.mongodb.org/manual/tutorial/expire-data/
+      originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
+    });
+
+    afterAll(function () {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    });
+
+    it('should compile the model with the created plugin', function () {
+      var schema = BlogSchema();
+      schema.plugin(created, {expires: 5});
+      Blog = model(schema);
+
+      expect(Blog).toEqual(jasmine.any(Function));
+    });
+
+    it('should delete document after expiration', function (done) {
+      Blog(blogData).save(function (err, blog) {
+        setTimeout(function () {
+          Blog.findById(blog._id, function (err, blog) {
+            expect(err).toBe(null);
+            expect(blog).toEqual(jasmine.any(Object));
+          });
+        }, 2500);
+
+        setTimeout(function () {
+          Blog.findById(blog._id, function (err, blog) {
+            expect(err).toBe(null);
+            expect(blog).toBe(null);
+
+            done();
+          });
+        }, 100000);
+      });
+    });
+  });
 });
 
 function model(name, schema) {

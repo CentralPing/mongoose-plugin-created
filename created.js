@@ -7,11 +7,12 @@ module.exports = function createdPlugin(schema, options) {
     useVirtual: true,
     datePath: 'created.date',
     byPath: 'created.by',
-    byRef: undefined
+    byRef: undefined,
+    expires: undefined
   }, options || {});
 
   if (!schema.path(options.datePath)) {
-    if (options.useVirtual) {
+    if (options.useVirtual && options.expires === undefined) {
       schema.virtual(options.datePath).get(function convertIdToTimestamp() {
         return new Date(this._id.getTimestamp());
       });
@@ -21,6 +22,10 @@ module.exports = function createdPlugin(schema, options) {
         type: Date,
         default: Date.now
       });
+
+      if (options.expires) {
+        schema.path(options.datePath).expires(options.expires);
+      }
     }
   }
 
