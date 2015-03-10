@@ -14,22 +14,22 @@ var blogData = {
   blog: 'This is my very first #blog! I hope you enjoy it. #WOOHOO'
 };
 
-describe('Mongoose plugin: created', function () {
-  beforeAll(function (done) {
-    connection = mongoose.createConnection('mongodb://localhost/unit_test');
-    connection.once('connected', function () {
+beforeAll(function (done) {
+  connection = mongoose.createConnection('mongodb://localhost/unit_test');
+  connection.once('connected', function () {
+    done();
+  });
+});
+
+afterAll(function (done) {
+  connection.db.dropDatabase(function (err, result) {
+    connection.close(function () {
       done();
     });
   });
+});
 
-  afterAll(function (done) {
-    connection.db.dropDatabase(function (err, result) {
-      connection.close(function () {
-        done();
-      });
-    });
-  });
-
+describe('Mongoose plugin: created', function () {
   describe('with plugin declaration', function () {
     var schema;
 
