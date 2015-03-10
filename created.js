@@ -3,7 +3,7 @@ var _ = require('lodash-node/modern');
 
 module.exports = function createdPlugin(schema, options) {
   /* jshint eqnull:true */
-  options = _.merge({
+  options = _.assign({
     useVirtual: true,
     datePath: 'created.date',
     dateOptions: {},
@@ -24,10 +24,12 @@ module.exports = function createdPlugin(schema, options) {
     }, options.dateOptions));
   }
 
-  if (options.byRef != null) {
-    schema.path(options.byPath, _.merge({
-      type: mongoose.Schema.Types.ObjectId,
-      ref: options.byRef
-    }, options.byOptions));
+  if (options.byPath != null && options.byPath !== '') {
+    schema.path(options.byPath, _.assign(
+      options.byRef != null ?
+        {type: mongoose.Schema.Types.ObjectId, ref: options.byRef} :
+        {type: String},
+      options.byOptions)
+    );
   }
 };

@@ -38,32 +38,46 @@ describe('Mongoose plugin: created', function () {
       schema = BlogSchema();
     });
 
-    it('should add a virtual `created.date` to the schema', function () {
+    it('should add `created.date` and `created.by` to the schema', function () {
       schema.plugin(created);
       expect(schema.pathType('created.date')).toBe('virtual');
-      expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
+      expect(schema.pathType('created.by')).toBe('real');
+      expect(schema.path('created.by').instance).toBe('String');
     });
 
-    it('should add both a virtual `created.by` and a real `created.date` to the schema', function () {
+    it('should add `created.date` and a reference for `created.by` to the schema', function () {
       schema.plugin(created, {byRef: 'User'});
       expect(schema.pathType('created.date')).toBe('virtual');
       expect(schema.pathType('created.by')).toBe('real');
+      expect(schema.path('created.by').instance).toBe('ObjectID');
     });
 
-    it('should add a real `created.date` to the schema', function () {
-      schema.plugin(created, {useVirtual: false});
-      expect(schema.pathType('created.date')).toBe('real');
-      expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
-    });
-
-    it('should add both `createdBy` and `createdDate` to the schema', function () {
-      schema.plugin(created, {byRef: 'User', byPath: 'createdBy', datePath: 'createdDate'});
+    it('should add `createdBy` and `createdDate` to the schema', function () {
+      schema.plugin(created, {byPath: 'createdBy', datePath: 'createdDate'});
       expect(schema.pathType('createdDate')).toBe('virtual');
       expect(schema.pathType('createdBy')).toBe('real');
     });
 
+    it('should only add `created.date` to the schema with `byPath` set to `null`', function () {
+      schema.plugin(created, {byPath: null});
+      expect(schema.pathType('created.date')).toBe('virtual');
+      expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
+    });
+
+    it('should only add `created.date` to the schema with `byPath` set to `undefined`', function () {
+      schema.plugin(created, {byPath: undefined});
+      expect(schema.pathType('created.date')).toBe('virtual');
+      expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
+    });
+
+    it('should only add `created.date` to the schema with `byPath` set to empty string', function () {
+      schema.plugin(created, {byPath: ''});
+      expect(schema.pathType('created.date')).toBe('virtual');
+      expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
+    });
+
     it('should make `created.by` required with options', function () {
-      schema.plugin(created, {byRef: 'User', byOptions: {required: true}});
+      schema.plugin(created, {byOptions: {required: true}});
       expect(schema.path('created.by').isRequired).toBe(true);
     });
   });
@@ -120,51 +134,6 @@ describe('Mongoose plugin: created', function () {
           expect(blog.created.date).toEqual(date);
           done();
         });
-      });
-    });
-  });
-
-  describe('with document expirations', function () {
-    var Blog;
-    var originalTimeout;
-
-    beforeAll(function () {
-      // Need to extend the Jasmine timeout to allow for 60+ seconds
-      // for MongoDB to purge the expired documents
-      // http://docs.mongodb.org/manual/tutorial/expire-data/
-      originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
-    });
-
-    afterAll(function () {
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-    });
-
-    it('should compile the model with the created plugin', function () {
-      var schema = BlogSchema();
-      schema.plugin(created, {dateOptions: {expires: 5}});
-      Blog = model(schema);
-
-      expect(Blog).toEqual(jasmine.any(Function));
-    });
-
-    it('should delete document after expiration', function (done) {
-      Blog(blogData).save(function (err, blog) {
-        setTimeout(function () {
-          Blog.findById(blog._id, function (err, blog) {
-            expect(err).toBe(null);
-            expect(blog).toEqual(jasmine.any(Object));
-          });
-        }, 2500);
-
-        setTimeout(function () {
-          Blog.findById(blog._id, function (err, blog) {
-            expect(err).toBe(null);
-            expect(blog).toBe(null);
-
-            done();
-          });
-        }, 100000);
       });
     });
   });
