@@ -49,11 +49,6 @@ describe('Mongoose plugin: created', function () {
       expect(schema.pathType('created.by')).toBe('real');
     });
 
-    it('should make `created.by` required by default', function () {
-      schema.plugin(created, {byRef: 'User'});
-      expect(schema.path('created.by').isRequired).toBe(true);
-    });
-
     it('should add a real `created.date` to the schema', function () {
       schema.plugin(created, {useVirtual: false});
       expect(schema.pathType('created.date')).toBe('real');
@@ -64,6 +59,11 @@ describe('Mongoose plugin: created', function () {
       schema.plugin(created, {byRef: 'User', byPath: 'createdBy', datePath: 'createdDate'});
       expect(schema.pathType('createdDate')).toBe('virtual');
       expect(schema.pathType('createdBy')).toBe('real');
+    });
+
+    it('should make `created.by` required with options', function () {
+      schema.plugin(created, {byRef: 'User', byOptions: {required: true}});
+      expect(schema.path('created.by').isRequired).toBe(true);
     });
   });
 
@@ -141,7 +141,7 @@ describe('Mongoose plugin: created', function () {
 
     it('should compile the model with the created plugin', function () {
       var schema = BlogSchema();
-      schema.plugin(created, {expires: 5});
+      schema.plugin(created, {dateOptions: {expires: 5}});
       Blog = model(schema);
 
       expect(Blog).toEqual(jasmine.any(Function));

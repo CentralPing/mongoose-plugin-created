@@ -6,34 +6,28 @@ module.exports = function createdPlugin(schema, options) {
   options = _.merge({
     useVirtual: true,
     datePath: 'created.date',
+    dateOptions: {},
     byPath: 'created.by',
     byRef: undefined,
-    expires: undefined
+    byOptions: {}
   }, options || {});
 
-  if (!schema.path(options.datePath)) {
-    if (options.useVirtual && options.expires === undefined) {
-      schema.virtual(options.datePath).get(function convertIdToTimestamp() {
-        return new Date(this._id.getTimestamp());
-      });
-    }
-    else {
-      schema.path(options.datePath, {
-        type: Date,
-        default: Date.now
-      });
-
-      if (options.expires) {
-        schema.path(options.datePath).expires(options.expires);
-      }
-    }
+  if (options.useVirtual && Object.keys(options.dateOptions).length === 0) {
+    schema.virtual(options.datePath).get(function convertIdToTimestamp() {
+      return new Date(this._id.getTimestamp());
+    });
+  }
+  else {
+    schema.path(options.datePath, _.merge({
+      type: Date,
+      default: Date.now
+    }, options.dateOptions));
   }
 
-  if (options.byRef != null && !schema.path(options.byPath)) {
-    schema.path(options.byPath, {
+  if (options.byRef != null) {
+    schema.path(options.byPath, _.merge({
       type: mongoose.Schema.Types.ObjectId,
-      ref: options.byRef,
-      required: true
-    });
+      ref: options.byRef
+    }, options.byOptions));
   }
 };
