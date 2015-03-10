@@ -8,6 +8,7 @@
     "mongoose": "^3.8.24"
   },
   "devDependencies": {
+    "faker": "^2.1.2",
     "gulp": "^3.8.11",
     "gulp-debug": "^2.0.1",
     "gulp-if": "^1.2.5",

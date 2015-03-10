@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var faker = require('faker');
 var created = require('./created');
 var Schema = mongoose.Schema;
 var connection;
@@ -10,8 +11,8 @@ var connection;
 delete require.cache.mongoose;
 
 var blogData = {
-  title: 'My first blog! #Super',
-  blog: 'This is my very first #blog! I hope you enjoy it. #WOOHOO'
+  title: faker.lorem.sentence(),
+  blog: faker.lorem.paragraphs()
 };
 
 beforeAll(function (done) {
@@ -113,7 +114,7 @@ describe('Mongoose plugin: created', function () {
 
         expect(blog.created.date).toBeDefined();
 
-        blog.blog = 'This is my sweet update! #foo #AhhhhYeah';
+        blog.blog = faker.lorem.paragraphs();
 
         blog.save(function (err, blog) {
           expect(blog.created.date).toEqual(date);
