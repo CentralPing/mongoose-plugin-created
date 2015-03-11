@@ -18,18 +18,19 @@ module.exports = function createdPlugin(schema, options) {
     });
   }
   else {
-    schema.path(options.datePath, _.merge({
-      type: Date,
-      default: Date.now
-    }, options.dateOptions));
+    schema.path(options.datePath, _.defaults(
+      {type: Date},
+      options.dateOptions,
+      {default: Date.now}
+    ));
   }
 
   if (options.byPath != null && options.byPath !== '') {
-    schema.path(options.byPath, _.assign(
+    schema.path(options.byPath, _.defaults(
       options.byRef != null ?
         {type: mongoose.Schema.Types.ObjectId, ref: options.byRef} :
         {type: String},
-      options.byOptions)
-    );
+      options.byOptions
+    ));
   }
 };

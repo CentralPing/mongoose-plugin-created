@@ -16,6 +16,8 @@ var blogData = {
 };
 
 beforeAll(function (done) {
+  mongoose.set('debug', process.env.DEBUG || false);
+
   connection = mongoose.createConnection('mongodb://localhost/unit_test');
   connection.once('connected', function () {
     done();
@@ -85,16 +87,13 @@ describe('Mongoose plugin: created', function () {
   describe('with initial document creation', function () {
     var blog;
 
-    it('should compile the model and create a document with the created plugin', function () {
+    beforeAll(function () {
       var Blog;
       var schema = BlogSchema();
       schema.plugin(created);
 
       Blog = model(schema);
-      expect(Blog).toEqual(jasmine.any(Function));
-
       blog = new Blog();
-      expect(blog instanceof Blog).toBe(true);
     });
 
     it('should set `created.date`', function () {
@@ -114,12 +113,10 @@ describe('Mongoose plugin: created', function () {
   describe('with document manipulations', function () {
     var Blog;
 
-    it('should compile the model with the created plugin', function () {
+    beforeAll(function () {
       var schema = BlogSchema();
       schema.plugin(created);
       Blog = model(schema);
-
-      expect(Blog).toEqual(jasmine.any(Function));
     });
 
     it('should not update `created.date` on subsequent saves', function (done) {
