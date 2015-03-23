@@ -2,35 +2,38 @@ var mongoose = require('mongoose');
 var _ = require('lodash-node/modern');
 
 module.exports = function createdPlugin(schema, options) {
-  /* jshint eqnull:true */
-  options = _.assign({
-    useVirtual: true,
-    datePath: 'created.date',
-    dateOptions: {},
-    byPath: 'created.by',
-    byRef: undefined,
-    byOptions: {}
+  options = _.merge({
+    date: {
+      useVirtual: true,
+      path: 'created.date',
+      options: {}
+    },
+    by: {
+      path: 'created.by',
+      ref: undefined,
+      options: {}
+    }
   }, options || {});
 
-  if (options.useVirtual && Object.keys(options.dateOptions).length === 0) {
-    schema.virtual(options.datePath).get(function convertIdToTimestamp() {
+  if (options.date.useVirtual && Object.keys(options.date.options).length === 0) {
+    schema.virtual(options.date.path).get(function convertIdToTimestamp() {
       return new Date(this._id.getTimestamp());
     });
   }
   else {
-    schema.path(options.datePath, _.defaults(
+    schema.path(options.date.path, _.defaults(
       {type: Date},
-      options.dateOptions,
+      options.date.options,
       {default: Date.now}
     ));
   }
 
-  if (options.byPath != null && options.byPath !== '') {
-    schema.path(options.byPath, _.defaults(
-      options.byRef != null ?
-        {type: mongoose.Schema.Types.ObjectId, ref: options.byRef} :
+  if (options.by.path && options.by.path) {
+    schema.path(options.by.path, _.defaults(
+      options.by.ref ?
+        {type: mongoose.Schema.Types.ObjectId, ref: options.by.ref} :
         {type: String},
-      options.byOptions
+      options.by.options
     ));
   }
 };

@@ -48,38 +48,32 @@ describe('Mongoose plugin: created', function () {
     });
 
     it('should add `created.date` and a reference for `created.by` to the schema', function () {
-      schema.plugin(created, {byRef: 'User'});
+      schema.plugin(created, {by: {ref: 'User'}});
       expect(schema.pathType('created.date')).toBe('virtual');
       expect(schema.pathType('created.by')).toBe('real');
       expect(schema.path('created.by').instance).toBe('ObjectID');
     });
 
     it('should add `createdBy` and `createdDate` to the schema', function () {
-      schema.plugin(created, {byPath: 'createdBy', datePath: 'createdDate'});
+      schema.plugin(created, {by: {path: 'createdBy'}, date: {path: 'createdDate'}});
       expect(schema.pathType('createdDate')).toBe('virtual');
       expect(schema.pathType('createdBy')).toBe('real');
     });
 
-    it('should only add `created.date` to the schema with `byPath` set to `null`', function () {
-      schema.plugin(created, {byPath: null});
+    it('should only add `created.date` to the schema with `by.path` set to `null`', function () {
+      schema.plugin(created, {by: {path: null}});
       expect(schema.pathType('created.date')).toBe('virtual');
       expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
     });
 
-    it('should only add `created.date` to the schema with `byPath` set to `undefined`', function () {
-      schema.plugin(created, {byPath: undefined});
-      expect(schema.pathType('created.date')).toBe('virtual');
-      expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
-    });
-
-    it('should only add `created.date` to the schema with `byPath` set to empty string', function () {
-      schema.plugin(created, {byPath: ''});
+    it('should only add `created.date` to the schema with `by.path` set to empty string', function () {
+      schema.plugin(created, {by: {path: ''}});
       expect(schema.pathType('created.date')).toBe('virtual');
       expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
     });
 
     it('should make `created.by` required with options', function () {
-      schema.plugin(created, {byOptions: {required: true}});
+      schema.plugin(created, {by: {options: {required: true}}});
       expect(schema.path('created.by').isRequired).toBe(true);
     });
   });
