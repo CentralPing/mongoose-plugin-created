@@ -28,7 +28,7 @@ module.exports = function createdPlugin(schema, options) {
     ));
   }
 
-  if (options.by.path && options.by.path) {
+  if (options.by.path) {
     schema.path(options.by.path, _.defaults(
       options.by.ref ?
         {type: mongoose.Schema.Types.ObjectId, ref: options.by.ref} :
