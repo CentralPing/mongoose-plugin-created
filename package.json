@@ -1,10 +1,10 @@
 {
   "name": "mongoose-plugin-created",
-  "version": "1.4.0-rc2",
+  "version": "1.4.0",
   "description": "Mongoose.js plugin to capture document creation timestamp with optional user identifier",
   "main": "created.js",
   "dependencies": {
-    "lodash-node": "^3.5.0"
+    "lodash-node": "^3.6.0"
   },
   "devDependencies": {
     "faker": "^2.1.2",
@@ -12,10 +12,10 @@
     "gulp-debug": "^2.0.1",
     "gulp-if": "^1.2.5",
     "gulp-jasmine": "^2.0.0",
-    "gulp-jshint": "^1.9.2",
-    "gulp-todo": "^2.5.0",
+    "gulp-jshint": "^1.9.4",
+    "gulp-todo": "^2.5.1",
     "mongoose": "^4.0.0",
-    "yargs": "^3.5.3"
+    "yargs": "^3.6.0"
   },
   "peerDependencies": {
     "mongoose": ">=4"

@@ -40,45 +40,71 @@ describe('Mongoose plugin: created', function () {
       schema = BlogSchema();
     });
 
-    it('should add `created.date` and `created.by` to the schema', function () {
+    it('should add a virtual path for `created.date` and a path for `created.by` to the schema', function () {
       schema.plugin(created);
       expect(schema.pathType('created.date')).toBe('virtual');
       expect(schema.pathType('created.by')).toBe('real');
       expect(schema.path('created.by').instance).toBe('String');
     });
 
-    it('should add `created.date` and a reference for `created.by` to the schema', function () {
+    it('should add a virtual path for `created.date` and a path reference for `created.by` to the schema', function () {
       schema.plugin(created, {by: {ref: 'User'}});
       expect(schema.pathType('created.date')).toBe('virtual');
       expect(schema.pathType('created.by')).toBe('real');
       expect(schema.path('created.by').instance).toBe('ObjectID');
     });
 
-    it('should add `createdBy` and `createdDate` to the schema', function () {
+    it('should add a virtual path for `createdBy` and a path for `createdDate` to the schema', function () {
       schema.plugin(created, {by: {path: 'createdBy'}, date: {path: 'createdDate'}});
       expect(schema.pathType('createdDate')).toBe('virtual');
       expect(schema.pathType('createdBy')).toBe('real');
     });
 
-    it('should only add `created.date` to the schema with `by.path` set to `null`', function () {
+    it('should only add a virtual path for `created.date` to the schema with `by.path` set to `null`', function () {
       schema.plugin(created, {by: {path: null}});
       expect(schema.pathType('created.date')).toBe('virtual');
       expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
     });
 
-    it('should only add `created.date` to the schema with `by.path` set to empty string', function () {
+    it('should only add a virtual path for `created.date` to the schema with `by.path` set to empty string', function () {
       schema.plugin(created, {by: {path: ''}});
       expect(schema.pathType('created.date')).toBe('virtual');
       expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
+    });
+
+    it('should make `created.date` a path with `date.useVirtual` false', function () {
+      schema.plugin(created, {date: {useVirtual: false}});
+      expect(schema.pathType('created.date')).toBe('real');
+    });
+
+    it('should make `created.date` a path with options', function () {
+      schema.plugin(created, {date: {options: {required: true}}});
+      expect(schema.pathType('created.date')).toBe('real');
+      expect(schema.path('created.date').isRequired).toBe(true);
     });
 
     it('should make `created.by` required with options', function () {
       schema.plugin(created, {by: {options: {required: true}}});
       expect(schema.path('created.by').isRequired).toBe(true);
     });
+
+    it('should add  a virtual path`created.expires` with `date.options` setting an expiration', function () {
+      schema.plugin(created, {date: {options: {expires: 1000}}});
+      expect(schema.pathType('created.expires')).toBe('virtual');
+    });
+
+    it('should add a virtual path `expires` with `expire.path` set and `date.options` setting an expiration', function () {
+      schema.plugin(created, {expires: {path: 'expires'}, date: {options: {expires: 1000}}});
+      expect(schema.pathType('expires')).toBe('virtual');
+    });
+
+    it('should add a path `expires` with `expires.options` set and `date.options` setting an expiration', function () {
+      schema.plugin(created, {expires: {options: {select: false}}, date: {options: {expires: 1000}}});
+      expect(schema.pathType('created.expires')).toBe('real');
+    });
   });
 
-  describe('with initial document creation', function () {
+  describe('with documents', function () {
     var blog;
 
     beforeAll(function () {
@@ -90,7 +116,7 @@ describe('Mongoose plugin: created', function () {
       blog = new Blog();
     });
 
-    it('should set `created.date`', function () {
+    it('should set `created.date` on instantiation', function () {
       expect(blog.created.date).toBeDefined();
     });
 
@@ -102,30 +128,31 @@ describe('Mongoose plugin: created', function () {
         done();
       });
     });
+
+    it('should not update `created.date` on subsequent saves', function (done) {
+      var date = blog.created.date;
+      expect(blog.created.date).toBeDefined();
+
+      blog.save(function (err, blog) {
+        expect(blog.created.date).toEqual(date);
+        done();
+      });
+    });
   });
 
-  describe('with document manipulations', function () {
+  describe('with document expiration', function () {
     var Blog;
 
     beforeAll(function () {
       var schema = BlogSchema();
-      schema.plugin(created);
+      schema.plugin(created, {date: {options: {expires: 1000}}});
       Blog = model(schema);
     });
 
-    it('should not update `created.date` on subsequent saves', function (done) {
-      Blog(blogData).save(function (err, blog) {
-        var date = blog.created.date;
+    it('should populate `created.expires`', function () {
+      var blog = Blog(blogData);
 
-        expect(blog.created.date).toBeDefined();
-
-        blog.blog = faker.lorem.paragraphs();
-
-        blog.save(function (err, blog) {
-          expect(blog.created.date).toEqual(date);
-          done();
-        });
-      });
+      expect(blog.created.expires - blog.created.date).toBe(1000);
     });
   });
 });
