@@ -72,30 +72,38 @@ describe('Mongoose plugin: created', function () {
       expect(schema.pathType('created.by')).toBe('adhocOrUndefined');
     });
 
-    it('should make `created.date` a path with `date.useVirtual` false', function () {
+    it('should add a path `created.date` with `date.useVirtual` false', function () {
       schema.plugin(created, {date: {useVirtual: false}});
       expect(schema.pathType('created.date')).toBe('real');
+      expect(schema.path('created.date').instance).toBe('Date');
     });
 
-    it('should make `created.date` a path with options', function () {
-      schema.plugin(created, {date: {options: {required: true}}});
-      expect(schema.pathType('created.date')).toBe('real');
+    it('should add a path `created.date` with options while restricting type', function () {
+      schema.plugin(created, {date: {options: {required: true, type: String}}});
       expect(schema.path('created.date').isRequired).toBe(true);
+      expect(schema.path('created.date').instance).toBe('Date');
     });
 
-    it('should make `created.by` required with options', function () {
+    it('should add a path `created.by` with options', function () {
       schema.plugin(created, {by: {options: {required: true}}});
       expect(schema.path('created.by').isRequired).toBe(true);
     });
 
-    it('should add  a virtual path`created.expires` with `date.options` setting an expiration', function () {
+    it('should add a path `created.expires` with `date.options` setting an expiration', function () {
       schema.plugin(created, {date: {options: {expires: 1000}}});
-      expect(schema.pathType('created.expires')).toBe('virtual');
+      expect(schema.pathType('created.expires')).toBe('real');
+      expect(schema.path('created.expires').instance).toBe('Date');
     });
 
-    it('should add a virtual path `expires` with `expire.path` set and `date.options` setting an expiration', function () {
+    it('should add a path `created.expires` with options while restricting type', function () {
+      schema.plugin(created, {date: {options: {expires: 1000}}, expires: {options: {required: true, type: String}}});
+      expect(schema.path('created.expires').isRequired).toBe(true);
+      expect(schema.path('created.expires').instance).toBe('Date');
+    });
+
+    it('should add a path `expires` with `expire.path` set and `date.options` setting an expiration', function () {
       schema.plugin(created, {expires: {path: 'expires'}, date: {options: {expires: 1000}}});
-      expect(schema.pathType('expires')).toBe('virtual');
+      expect(schema.pathType('expires')).toBe('real');
     });
 
     it('should add a path `expires` with `expires.options` set and `date.options` setting an expiration', function () {
@@ -140,19 +148,46 @@ describe('Mongoose plugin: created', function () {
     });
   });
 
+  // http://mongoosejs.com/docs/api.html#schema_date_SchemaDate-expires
   describe('with document expiration', function () {
-    var Blog;
+    var schema;
 
-    beforeAll(function () {
-      var schema = BlogSchema();
-      schema.plugin(created, {date: {options: {expires: 1000}}});
-      Blog = model(schema);
+    beforeEach(function () {
+      schema = BlogSchema();
     });
 
-    it('should populate `created.expires`', function () {
+    it('should populate `created.expires` with expiration set to a numeric value', function (done) {
+      schema.plugin(created, {date: {options: {expires: 1000}}});
+      var Blog = model(schema);
       var blog = Blog(blogData);
 
-      expect(blog.created.expires - blog.created.date).toBe(1000);
+      blog.save(function (err, blog) {
+        expect(blog.created.expires - blog.created.date).toBe(1000000);
+        done();
+      });
+    });
+
+    it('should populate `created.expires` with expiration set to a string value', function (done) {
+      schema.plugin(created, {date: {options: {expires: '1h'}}});
+      var Blog = model(schema);
+      var blog = Blog(blogData);
+
+      blog.save(function (err, blog) {
+        expect(blog.created.expires - blog.created.date).toBe(3600000);
+        done();
+      });
+    });
+
+    it('should populate `created.expires` with expiration set to a Date value', function (done) {
+      schema.plugin(created, {date: {options: {expires: new Date(Date.now() + 3600000)}}});
+      var Blog = model(schema);
+      var blog = Blog(blogData);
+
+      blog.save(function (err, blog) {
+        expect(blog.created.expires - blog.created.date).toBeGreaterThan(3599900);
+        expect(blog.created.expires - blog.created.date).toBeLessThan(3600100);
+        done();
+      });
     });
   });
 });

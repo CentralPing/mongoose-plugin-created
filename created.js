@@ -33,15 +33,26 @@ module.exports = function createdPlugin(schema, options) {
     ));
 
     if (options.date.options.expires && options.expires.path) {
-      (Object.keys(options.expires.options).length === 0 ?
-        schema.virtual(options.expires.path) :
-        schema.path(options.expires.path, options.expires.options)
-      ).get(function getExpiration() {
-        var expires = new Date(this.get(options.date.path));
+      schema.path(options.expires.path, _.defaults(
+        {type: Date},
+        options.expires.options
+      ));
 
-        expires.setMilliseconds(expires.getMilliseconds() + options.date.options.expires);
+      schema.pre('validate', function (next) {
+        var expires;
 
-        return expires;
+        if (this.isNew) {
+          // http://mongoosejs.com/docs/api.html#schema_date_SchemaDate-expires
+          expires = this.schema.path(options.date.path)._index.expireAfterSeconds;
+
+          if (_.isNumber(expires)) {
+            expires = new Date(this.get(options.date.path).getTime() + (expires * 1000));
+          }
+
+          this.set(options.expires.path, expires);
+        }
+
+        next();
       });
     }
   }
