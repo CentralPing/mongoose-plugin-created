@@ -1,6 +1,30 @@
 var _ = require('lodash-node/modern');
 
+/**
+ * @module mongoose-plugin-created
+ * @example
+```js
+var createdPlugin = require('mongoose-plugin-created');
+var schema = Schema({...});
+schema.plugin(createdPlugin[, OPTIONS]);
+```
+*/
+
 module.exports = function createdPlugin(schema, options) {
+  /**
+   * @param {object} [options]
+   * @param {object} [options.date] - options for configuring the path for storing the date.
+   * @param {boolean} options.date.useVirtual=true - use a virtual path to infer the document creation date from the ObjectId `_id`. Will revert to a real path if `options.date.options` are specified.
+   * @param {string} options.date.path=created.date - the path for storing the creation date if not a virtual.
+   * @param {object} options.date.options - property options to set (`type` will always be `Date`). `(e.g. {select: false})`
+   * @param {object} [options.by] - options for configuring the path for storing the creator.
+   * @param {string} options.by.path=created.by - the path for storing the document creator.
+   * @param {string} options.by.ref - the reference model to use `(e.g. {by: {ref: 'ModelRefName'}})`
+   * @param {object} options.by.options - property options to set (if not a reference the `type` will always be `String`). `(e.g. {select: false})`
+   * @param {object} [options.expires] - options for configuring the path to store the expiration time for the document based on the date path.
+   * @param {string} options.expires.path=created.expires - the path for storing the document expiration timestamp. *This is an approimation due to MongoDB's method for expiring documents*
+   * @param {object} options.expires.options - property options to set ()`type` will always be `Date`). `(e.g. {select: false})`
+  */
   options = _.merge({
     date: {
       useVirtual: true,
