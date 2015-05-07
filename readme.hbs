@@ -2,6 +2,8 @@ mongoose-plugin-created
 ====================
 
 [ ![Codeship Status for CentralPing/mongoose-plugin-created](https://codeship.com/projects/e23c0930-4b41-0132-6abf-22e4e23acdc5/status)](https://codeship.com/projects/46701)
+[ ![Code Climate for CentralPing/mongoose-plugin-created](https://codeclimate.com/github/CentralPing/mongoose-plugin-created/badges/gpa.svg)](https://codeclimate.com/github/CentralPing/mongoose-plugin-created)
+[ ![Dependency Status for CentralPing/mongoose-plugin-created](https://david-dm.org/CentralPing/mongoose-plugin-created.svg)](https://david-dm.org/CentralPing/mongoose-plugin-created)
 
 A [mongoose.js](https://github.com/LearnBoost/mongoose/) plugin to create a document creation timestamp with optional user identifier.
 
@@ -33,3 +35,7 @@ var Foo = mongoose.model('Foo', schema);
 var foo = Foo(); // foo.created --> {date: 'Wed May 05 2015 12:05:50 GMT-0400 (EDT)'}
 foo.created.by = userA; // foo.created --> {date: 'Wed May 05 2015 12:05:50 GMT-0400 (EDT)', by: '507f191e810c19729de860ea'}
 ```
+
+# License
+
+Apache 2.0
