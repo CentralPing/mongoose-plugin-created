@@ -1,3 +1,4 @@
+'use strict';
 /* jshint node: true, jasmine: true */
 
 var mongoose = require('mongoose');
@@ -39,7 +40,7 @@ describe('Mongoose plugin: created', function () {
     var schema;
 
     beforeEach(function () {
-      schema = BlogSchema();
+      schema = blogSchema();
     });
 
     it('should add a virtual path for `created.date` and a path for `created.by` to the schema', function () {
@@ -119,7 +120,7 @@ describe('Mongoose plugin: created', function () {
 
     beforeAll(function () {
       var Blog;
-      var schema = BlogSchema();
+      var schema = blogSchema();
       schema.plugin(created);
 
       Blog = model(schema);
@@ -155,13 +156,13 @@ describe('Mongoose plugin: created', function () {
     var schema;
 
     beforeEach(function () {
-      schema = BlogSchema();
+      schema = blogSchema();
     });
 
     it('should populate `created.expires` with expiration set to a numeric value', function (done) {
       schema.plugin(created, {date: {options: {expires: 1000}}});
       var Blog = model(schema);
-      var blog = Blog(blogData);
+      var blog = new Blog(blogData);
 
       blog.save(function (err, blog) {
         expect(blog.created.expires - blog.created.date).toBe(1000000);
@@ -172,7 +173,7 @@ describe('Mongoose plugin: created', function () {
     it('should populate `created.expires` with expiration set to a string value', function (done) {
       schema.plugin(created, {date: {options: {expires: '1h'}}});
       var Blog = model(schema);
-      var blog = Blog(blogData);
+      var blog = new Blog(blogData);
 
       blog.save(function (err, blog) {
         expect(blog.created.expires - blog.created.date).toBe(3600000);
@@ -183,7 +184,7 @@ describe('Mongoose plugin: created', function () {
     it('should populate `created.expires` with expiration set to a Date value', function (done) {
       schema.plugin(created, {date: {options: {expires: new Date(Date.now() + 3600000)}}});
       var Blog = model(schema);
-      var blog = Blog(blogData);
+      var blog = new Blog(blogData);
 
       blog.save(function (err, blog) {
         expect(blog.created.expires - blog.created.date).toBeGreaterThan(3599900);
@@ -205,8 +206,8 @@ function model(name, schema) {
   return connection.model(name, schema, name);
 }
 
-function BlogSchema() {
-  return Schema({
+function blogSchema() {
+  return new Schema({
     title: String,
     blog: String
   });
