@@ -27,27 +27,27 @@ gulp.task('default', function () {
   // place code for your default task here
 });
 
-gulp.task('lint', function (done) {
+gulp.task('lint', function () {
   return lint(cliSrc || config.paths.scripts);
 });
 
-gulp.task('lint:all', function (done) {
+gulp.task('lint:all', function () {
   return lint(config.paths.all);
 });
 
-gulp.task('lint:spec', function (done) {
+gulp.task('lint:spec', function () {
   return lint(config.paths.specs);
 });
 
-gulp.task('test', ['lint:all'], function (done) {
+gulp.task('test', ['lint:all'], function () {
   return testRunner(cliSrc || config.paths.specs);
 });
 
-gulp.task('watch', ['test:unit'], function (done) {
+gulp.task('watch', ['test:unit'], function () {
   return gulp.watch(cliSrc || config.paths.all, ['test']);
 });
 
-gulp.task('todo', function (done) {
+gulp.task('todo', function () {
   return gulp.src(config.paths.all)
     .pipe(todo({
       //fileName: 'todo.md',
