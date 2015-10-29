@@ -158,6 +158,49 @@ describe('Mongoose plugin: created', function () {
     });
   });
 
+  describe('with middleware hooks', function () {
+    var schema;
+
+    beforeEach(function () {
+      schema = blogSchema();
+      schema.plugin(created);
+    });
+
+    it('should set `created.date` before pre validate', function (done) {
+      var Blog;
+      var blog;
+
+      schema.pre('validate', function (next) {
+        expect(blog.created.date).to.be.defined;
+        next();
+      });
+
+      Blog = model(schema);
+      blog = new Blog();
+
+      blog.save(function (err, blog) {
+        done();
+      });
+    });
+
+    it('should set `created.date` before pre save', function (done) {
+      var Blog;
+      var blog;
+
+      schema.pre('save', function (next) {
+        expect(blog.created.date).to.be.defined;
+        next();
+      });
+
+      Blog = model(schema);
+      blog = new Blog();
+
+      blog.save(function (err, blog) {
+        done();
+      });
+    });
+  });
+
   // http://mongoosejs.com/docs/api.html#schema_date_SchemaDate-expires
   describe('with document expiration', function () {
     var schema;
