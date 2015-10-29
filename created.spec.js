@@ -4,6 +4,12 @@
 var mongoose = require('mongoose');
 var faker = require('faker');
 var created = require('./created');
+
+var connectionString = 'mongodb://' +
+  (process.env.MONGO_HOST || 'localhost') +
+  (process.env.MONGO_PORT ? ':' + process.env.MONGO_PORT : '') +
+  '/unit_test';
+
 var Schema = mongoose.Schema;
 var connection;
 
@@ -21,7 +27,7 @@ var blogData = {
 beforeAll(function (done) {
   mongoose.set('debug', process.env.DEBUG || false);
 
-  connection = mongoose.createConnection('mongodb://localhost/unit_test');
+  connection = mongoose.createConnection(connectionString);
   connection.once('connected', function () {
     done();
   });
