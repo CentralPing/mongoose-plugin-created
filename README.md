@@ -1,12 +1,12 @@
 mongoose-plugin-created
 ====================
 
-[ ![Codeship Status for CentralPing/mongoose-plugin-created](https://codeship.com/projects/e23c0930-4b41-0132-6abf-22e4e23acdc5/status)](https://codeship.com/projects/46701)
+[![Codeship Status for CentralPing/mongoose-plugin-created](https://codeship.com/projects/e23c0930-4b41-0132-6abf-22e4e23acdc5/status)](https://codeship.com/projects/46701)
 [![Build Status](https://travis-ci.org/CentralPing/mongoose-plugin-created.svg?branch=master)](https://travis-ci.org/CentralPing/mongoose-plugin-created)
-[ ![Code Climate for CentralPing/mongoose-plugin-created](https://codeclimate.com/github/CentralPing/mongoose-plugin-created/badges/gpa.svg)](https://codeclimate.com/github/CentralPing/mongoose-plugin-created)
-[ ![Dependency Status for CentralPing/mongoose-plugin-created](https://david-dm.org/CentralPing/mongoose-plugin-created.svg)](https://david-dm.org/CentralPing/mongoose-plugin-created)
+[![Code Climate for CentralPing/mongoose-plugin-created](https://codeclimate.com/github/CentralPing/mongoose-plugin-created/badges/gpa.svg)](https://codeclimate.com/github/CentralPing/mongoose-plugin-created)
+[![Dependency Status for CentralPing/mongoose-plugin-created](https://david-dm.org/CentralPing/mongoose-plugin-created.svg)](https://david-dm.org/CentralPing/mongoose-plugin-created)
 
-A [mongoose.js](https://github.com/LearnBoost/mongoose/) plugin to create a document creation timestamp with optional user identifier.
+A [mongoose.js](https://github.com/Automattic/mongoose/) plugin to create a document creation timestamp with optional user identifier.
 
 ## Installation
 
@@ -20,6 +20,7 @@ var schema = Schema({...});
 schema.plugin(createdPlugin[, OPTIONS]);
 ```
 <a name="module_mongoose-plugin-created..options"></a>
+
 ### mongoose-plugin-created~options
 **Kind**: inner property of <code>[mongoose-plugin-created](#module_mongoose-plugin-created)</code>  
 
