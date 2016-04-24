@@ -6,10 +6,7 @@ var mongoose = require('mongoose');
 var faker = require('faker');
 var created = require('./created');
 
-var connectionString = 'mongodb://' +
-  (process.env.MONGO_HOST || 'localhost') +
-  (process.env.MONGO_PORT ? ':' + process.env.MONGO_PORT : '') +
-  '/unit_test';
+var connectionString = process.env.MONGO_URL || 'mongodb://localhost/unit_test';
 
 var Schema = mongoose.Schema;
 var connection;
